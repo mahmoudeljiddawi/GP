@@ -8,3 +8,4 @@ LAB = cv2.cvtColor(BGR , cv2.COLOR_BGR2LAB)
 origin = cv2.cvtColor(LAB , cv2.COLOR_LAB2BGR)
 cv2.imshow('i' , origin)
 cv2.waitKey()
+List = []
