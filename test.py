@@ -8,10 +8,12 @@ import numpy as np
 import os
 import tensorflow as tf
 from keras.preprocessing.image import array_to_img, img_to_array, load_img
-from sklearn.metrics import mean_squared_error
+import resizing
+#from sklearn.metrics import mean_squared_error
+
 
 inception = InceptionResNetV2(weights=None, include_top=True)
-inception.load_weights('inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5')
+inception.load_weights('E:/OmarKhaled/Work/Year 4/GP/DownloadScript/inception_resnet_v2_weights_tf_dim_ordering_tf_kernels.h5')
 inception.graph = tf.get_default_graph()
 
 print('done')
@@ -33,17 +35,19 @@ def create_inception_embedding(grayscaled_rgb):
 
 color_me = []
 
-photos = os.listdir('photo')
+photos = os.listdir('E:/OmarKhaled/Work/Year 4/GP/Resize test')
 
 Y = []
+img_size=[]
 
 for photo in photos:
     if(photo[0]!='.'):
         print(photo)
-        ph = load_img('photo/'+photo)
+        ph = load_img('E:/OmarKhaled/Work/Year 4/GP/Resize test/'+photo)
         ph = img_to_array(ph)
-        ph = resize(ph, (256, 256, 3), mode='constant')
-
+        #ph = resize(ph, (256, 256, 3), mode='constant')
+        img_size.append([ph.shape[0],ph.shape[1]])
+        ph = resizing.resize_img(ph)
         Y.append(ph)
         color_me.append(ph)
 
@@ -53,7 +57,7 @@ color_me_embed = create_inception_embedding(gray_me)
 color_me = rgb2lab(1.0/255*color_me)[:,:,:,0]
 color_me = color_me.reshape(color_me.shape+(1,))
 
-model = load_model('10imgmodel.h5')
+model = load_model('E:/OmarKhaled/Work/Year 4/GP/DownloadScript/s128b128e1200st1.h5')
 output = model.predict([color_me, color_me_embed])
 output = output * 128
 
@@ -64,7 +68,8 @@ for i in range(len(output)):
     cur[:,:,1:] = output[i]
     Y_hat = lab2rgb(cur)
     MSE.append(mse(Y[i], Y_hat))
-    imsave("result"+str(i)+".png", Y_hat)
+    Y_hat = resizing.enlargement(Y_hat, img_size[i])
+    imsave( "E:/OmarKhaled/Work/Year 4/GP/Resize test/result"+str(i)+".png", Y_hat)
 
 
 print(MSE)
