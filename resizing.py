@@ -30,17 +30,15 @@ def resize_img(img):
 def enlargement(img , size):
         print(size)
         if size[0]>size[1]:
-            resized = imutils.resize(img, height=size[0])
-            iterations = size[0] - size[1]
-            newImage = resized[: , iterations : , : ]
+            iterations = int(size[1]*256/size[0])
+            newImage = img[: , 256-iterations : , : ]
 
         elif size[0]<size[1]:
-            resized = imutils.resize(img, width=size[1])
-            iterations = size[1] - size[0]
-            newImage = resized[: iterations , :  , : ]
+            iterations =int( size[0]*256/size[1])
+            newImage = img[: 256-iterations , :  , : ]
         else:
-            resized = imutils.resize(img, width=size[1])
-            newImage=resized
+            newImage=img
         print(newImage.shape)
         return newImage
+
 
